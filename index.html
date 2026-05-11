@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuestLog - Tu Asistente de Backlog</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ==========================================
+           1. VARIABLES Y RESET (Sistema de Diseño)
+           ========================================== */
+        :root {
+            --bg-color: #121212;
+            --surface-color: #1e1e1e;
+            --surface-hover: #2a2a2a;
+            --text-main: #ffffff;
+            --text-muted: #a0a0a0;
+            --accent-mint: #00F5D4;
+            --accent-pink: #F15BB5;
+            --accent-blue: #00BBF9;
+            --border-color: #333333;
+            
+            --font-display: 'Rajdhani', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            
+            --radius-md: 12px;
+            --radius-lg: 20px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ==========================================
+           2. COMPONENTES GLOBALES (Botones, Etiquetas)
+           ========================================== */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .btn {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-neon {
+            background-color: transparent;
+            color: var(--accent-mint);
+            border: 2px solid var(--accent-mint);
+            box-shadow: 0 0 10px rgba(0, 245, 212, 0.2);
+        }
+
+        .btn-neon:hover {
+            background-color: var(--accent-mint);
+            color: #000;
+            box-shadow: 0 0 20px rgba(0, 245, 212, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .tag {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background-color: var(--surface-color);
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        /* ==========================================
+           3. ESTRUCTURA: HEADER
+           ========================================== */
+        header {
+            background-color: rgba(18, 18, 18, 0.95);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .logo {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-main);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo span {
+            color: var(--accent-mint);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--surface-color);
+            border: 2px solid var(--accent-mint);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        /* ==========================================
+           4. ESTRUCTURA: DASHBOARD (Quick Play)
+           ========================================== */
+        .dashboard {
+            padding: 60px 0;
+            text-align: center;
+            background: radial-gradient(circle at center, #1a2a2a 0%, var(--bg-color) 70%);
+        }
+
+        .dashboard h1 {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .dashboard p {
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+
+        .quick-play-widget {
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            max-width: 500px;
+            margin: 0 auto;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .time-selector {
+            width: 100%;
+            margin-bottom: 30px;
+        }
+        
+        .time-selector select {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            outline: none;
+        }
+
+        /* ==========================================
+           5. ESTRUCTURA: BIBLIOTECA (Grid)
+           ========================================== */
+        .library {
+            padding: 40px 0 80px;
+        }
+
+        .library-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .library-header h2 {
+            font-family: var(--font-display);
+            font-size: 2rem;
+        }
+
+        .filters {
+            display: flex;
+            gap: 10px;
+            background-color: var(--surface-color);
+            padding: 5px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .filter-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .filter-btn.active, .filter-btn:hover {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 25px;
+        }
+
+        
+        .game-card {
+            background-color: var(--surface-color);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-mint);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .card-image {
+            height: 300px;
+            width: 100%;
+            background-color: #2a2a2a;
+            object-fit: cover;
+        }
+
+        .card-content {
+            padding: 15px;
+        }
+
+        .game-title {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .game-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .time-est {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background-color: var(--bg-color);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--accent-mint);
+        }
+
+        
+        .status-playing .progress-fill { background-color: var(--accent-blue); }
+        .status-completed .progress-fill { background-color: var(--accent-mint); }
+        .status-backlog .progress-fill { background-color: var(--accent-pink); width: 0%; }
+
+        /* ==========================================
+           6. MODAL (Pop-up de Recomendación)
+           ========================================== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-content {
+            background-color: var(--surface-color);
+            border: 1px solid var(--accent-mint);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            transform: translateY(20px);
+            transition: var(--transition);
+            box-shadow: 0 0 30px rgba(0, 245, 212, 0.2);
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-content h3 {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            color: var(--accent-mint);
+            margin-bottom: 20px;
+        }
+
+        #modal-game-cover {
+            width: 150px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        /* ==========================================
+           7. MEDIA QUERIES (Mobile First / Responsive)
+           ========================================== */
+        @media (max-width: 768px) {
+            .library-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .filters {
+                width: 100%;
+                justify-content: space-between;
+            }
+            .filter-btn {
+                flex: 1;
+                text-align: center;
+                padding: 10px 5px;
+            }
+            .dashboard h1 {
+                font-size: 2.2rem;
+            }
+            .games-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 15px;
+            }
+            .card-image {
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    
+    <header>
+        <div class="container nav-container">
+            <a href="#" class="logo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-mint)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                Quest<span>Log</span>
+            </a>
+            <div class="user-profile">
+                <span style="color: var(--text-muted); font-size: 0.9rem;">Hola, Ricardo</span>
+                <div class="avatar">R</div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        
+        <section class="dashboard">
+            <div class="container">
+                <h1>¿Sin saber a qué jugar?</h1>
+                <p>Dinos cuánto tiempo tienes y nosotros decidimos por ti.</p>
+                
+                <div class="quick-play-widget">
+                    <div class="time-selector">
+                        <select id="time-select">
+                            <option value="30">Tengo 30 minutos o menos</option>
+                            <option value="60" selected>Tengo alrededor de 1 hora</option>
+                            <option value="120">Tengo 2 horas libres</option>
+                            <option value="999">Tengo toda la tarde (Ilimitado)</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-neon" onclick="triggerQuickPlay()" style="width: 100%;">
+                        Quick Play
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        
+        <section class="library">
+            <div class="container">
+                <div class="library-header">
+                    <h2>Mi Biblioteca</h2>
+                    <div class="filters" id="filters">
+                        <button class="filter-btn active" data-filter="all">Todos</button>
+                        <button class="filter-btn" data-filter="playing">Jugando</button>
+                        <button class="filter-btn" data-filter="backlog">Pendientes</button>
+                        <button class="filter-btn" data-filter="completed">Completados</button>
+                    </div>
+                </div>
+
+                
+                <div class="games-grid" id="games-grid">
+                    
+                </div>
+            </div>
+        </section>
+    </main>
+
+    
+    <div class="modal-overlay" id="quick-play-modal">
+        <div class="modal-content">
+            <h3>¡Es hora de jugar!</h3>
+            <img src="" alt="Portada del juego" id="modal-game-cover">
+            <h4 id="modal-game-title" style="font-family: var(--font-display); font-size: 1.5rem; margin-bottom: 5px;">Título del Juego</h4>
+            <p id="modal-game-desc" style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Tiempo estimado: 45 min</p>
+            
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button class="btn btn-neon" onclick="closeModal()">¡A Jugar!</button>
+                <button class="btn" onclick="closeModal()" style="background: transparent; color: var(--text-muted); border: 1px solid var(--border-color);">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    
+    <script>
+        // 1. Simulación de Base de Datos (API)
+        const gamesDB = [
+            { id: 1, title: "Hollow Knight", status: "playing", timeMinutes: 60, progress: 45, cover: "https://placehold.co/300x400/2a2a2a/00F5D4?text=Hollow+Knight", platform: "PC" },
+            { id: 2, title: "Celeste", status: "backlog", timeMinutes: 30, progress: 0, cover: "https://placehold.co/300x400/2a2a2a/F15BB5?text=Celeste", platform: "Switch" },
+            { id: 3, title: "The Witcher 3", status: "playing", timeMinutes: 120, progress: 60, cover: "https://placehold.co/300x400/2a2a2a/00BBF9?text=The+Witcher", platform: "PS5" },
+            { id: 4, title: "Hades", status: "completed", timeMinutes: 45, progress: 100, cover: "https://placehold.co/300x400/2a2a2a/00F5D4?text=Hades", platform: "PC" },
+            { id: 5, title: "Cyberpunk 2077", status: "backlog", timeMinutes: 999, progress: 0, cover: "https://placehold.co/300x400/2a2a2a/F15BB5?text=Cyberpunk", platform: "PS5" },
+            { id: 6, title: "Stardew Valley", status: "playing", timeMinutes: 30, progress: 80, cover: "https://placehold.co/300x400/2a2a2a/00BBF9?text=Stardew", platform: "PC" }
+        ];
+
+        const gridContainer = document.getElementById('games-grid');
+        const filterButtons = document.querySelectorAll('.filter-btn');
+
+        // 2. Función para renderizar los juegos en la pantalla
+        function renderGames(filter = 'all') {
+            gridContainer.innerHTML = ''; // Limpiar grid
+            
+            const filteredGames = gamesDB.filter(game => filter === 'all' || game.status === filter);
+
+            filteredGames.forEach(game => {
+                
+                const card = document.createElement('article');
+                card.className = `game-card status-${game.status}`;
+                
+                
+                let statusText = "";
+                if(game.status === 'playing') statusText = "Jugando";
+                if(game.status === 'backlog') statusText = "Pendiente";
+                if(game.status === 'completed') statusText = "Completado";
+
+                card.innerHTML = `
+                    <img src="${game.cover}" alt="${game.title}" class="card-image" loading="lazy">
+                    <div class="card-content">
+                        <h3 class="game-title" title="${game.title}">${game.title}</h3>
+                        <div class="game-meta">
+                            <span class="tag">${game.platform}</span>
+                            <span class="time-est">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                ${statusText}
+                            </span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${game.progress}%"></div>
+                        </div>
+                    </div>
+                `;
+                gridContainer.appendChild(card);
+            });
+        }
+
+        // 3. Lógica de los Filtros
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                
+                filterButtons.forEach(b => b.classList.remove('active'));
+                
+                e.target.classList.add('active');
+                
+                renderGames(e.target.dataset.filter);
+            });
+        });
+
+        // 4. Lógica del Algoritmo "Quick Play"
+        function triggerQuickPlay() {
+            const timeAvailable = parseInt(document.getElementById('time-select').value);
+            
+            
+            const playableGames = gamesDB.filter(game => 
+                game.status !== 'completed' && game.timeMinutes <= timeAvailable
+            );
+
+            if(playableGames.length === 0) {
+                alert("No tienes juegos pendientes que encajen en ese tiempo. ¡Prueba a jugar algo más largo o añade juegos nuevos!");
+                return;
+            }
+
+            
+            const randomGame = playableGames[Math.floor(Math.random() * playableGames.length)];
+
+            
+            document.getElementById('modal-game-title').innerText = randomGame.title;
+            document.getElementById('modal-game-cover').src = randomGame.cover;
+            
+            let timeText = randomGame.timeMinutes === 999 ? "Sesión larga recomendada" : `Sesión de ${randomGame.timeMinutes} minutos`;
+            document.getElementById('modal-game-desc').innerText = timeText;
+
+            
+            document.getElementById('quick-play-modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('quick-play-modal').classList.remove('active');
+        }
+
+        
+        window.onload = () => {
+            renderGames('all');
+        };
+    </script>
+</body>
+</html>
